@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 const api = axios.create({
-    baseURL: 'https://portfolio-backend1.onrender.com/api', // Pointing to port 8081
+    baseURL: 'https://backend-portfolio-production-7884.up.railway.app/api',
     headers: {
         'Content-Type': 'application/json',
     },
