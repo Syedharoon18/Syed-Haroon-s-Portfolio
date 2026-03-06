@@ -163,7 +163,8 @@ const Admin = () => {
         if (selectedFile) {
             const uploadedUrl = await handleUpload(selectedFile, setUploading);
             if (uploadedUrl) {
-                finalImageUrl = `http://localhost:8081${uploadedUrl}`; // Fully qualified for immediate rendering
+                const backendUrl = api.defaults.baseURL.replace(/\/api$/, '');
+                finalImageUrl = `${backendUrl}${uploadedUrl}`; // Fully qualified for immediate rendering
             } else {
                 return; // Stop if upload failed
             }

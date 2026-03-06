@@ -9,7 +9,7 @@ const ResumeView = () => {
     const [resumeExists, setResumeExists] = useState(false);
     const [loading, setLoading] = useState(true);
 
-    const baseResumeUrl = 'http://localhost:8081/api/upload/resume';
+    const baseResumeUrl = `${api.defaults.baseURL}/upload/resume`;
     const [resumeUrl, setResumeUrl] = useState(baseResumeUrl);
 
     useEffect(() => {

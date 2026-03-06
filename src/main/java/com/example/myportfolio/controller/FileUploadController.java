@@ -25,7 +25,7 @@ import java.util.UUID;
 @CrossOrigin(origins = "http://localhost:5173")
 public class FileUploadController {
 
-    private final String UPLOAD_DIR = "uploads/";
+    private final String UPLOAD_DIR = System.getProperty("user.dir") + "/uploads/";
 
     @PostMapping
     public ResponseEntity<?> uploadFile(@RequestParam("file") MultipartFile file) {
