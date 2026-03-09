@@ -4,7 +4,7 @@ import { Lock, Upload, Plus, Trash2, Edit2, Loader2, Save, X } from 'lucide-reac
 
 const Admin = () => {
     const [isAuthenticated, setIsAuthenticated] = useState(() => {
-        return localStorage.getItem('adminAuth') === 'true';
+        return sessionStorage.getItem('adminAuth') === 'true';
     });
 
     const [username, setUsername] = useState('');
@@ -56,8 +56,8 @@ const Admin = () => {
             const res = await api.post('/auth/login', { username, password });
             if (res.status === 200) {
                 setIsAuthenticated(true);
-                localStorage.setItem('adminAuth', 'true');
-                localStorage.setItem('adminUser', username);
+                sessionStorage.setItem('adminAuth', 'true');
+                sessionStorage.setItem('adminUser', username);
                 fetchProjects();
             }
         } catch (err) {
@@ -71,7 +71,7 @@ const Admin = () => {
     const handleUpdatePassword = async (e) => {
         e.preventDefault();
         setUpdateMsg({ text: '', type: '' });
-        const currentUser = localStorage.getItem('adminUser') || 'admin';
+        const currentUser = sessionStorage.getItem('adminUser') || 'admin';
         try {
             const res = await api.post('/auth/update-password', {
                 username: currentUser,
@@ -268,7 +268,7 @@ const Admin = () => {
                 <h1 className="text-4xl font-extrabold mb-4 md:mb-0">
                     <span className="gradient-text">Admin</span> Dashboard
                 </h1>
-                <button onClick={() => { setIsAuthenticated(false); localStorage.removeItem('adminAuth'); localStorage.removeItem('adminUser'); }} className="px-4 py-2 border border-slate-700 rounded-lg hover:bg-slate-800 transition-colors text-sm">
+                <button onClick={() => { setIsAuthenticated(false); sessionStorage.removeItem('adminAuth'); sessionStorage.removeItem('adminUser'); }} className="px-4 py-2 border border-slate-700 rounded-lg hover:bg-slate-800 transition-colors text-sm">
                     Lock Dashboard
                 </button>
             </div>
