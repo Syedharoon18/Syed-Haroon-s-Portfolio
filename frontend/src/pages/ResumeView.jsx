@@ -9,53 +9,38 @@ const ResumeView = () => {
     const [resumeExists, setResumeExists] = useState(false);
     const [loading, setLoading] = useState(true);
 
-    const baseResumeUrl = `${api.defaults.baseURL}/upload/resume`;
-    const [resumeUrl, setResumeUrl] = useState(baseResumeUrl);
+    const [resumeUrl, setResumeUrl] = useState('');
 
     useEffect(() => {
-        const uniqueUrl = `${baseResumeUrl}?t=${Date.now()}`;
-        setResumeUrl(uniqueUrl);
-
-        // Check if resume exists
-        const checkResume = async () => {
+        // Check if resume link exists in database
+        const fetchResume = async () => {
             try {
-                const response = await fetch(uniqueUrl);
-                // We just need to know if it's 200 or 404
-                if (response.ok) {
+                const response = await api.get('/upload/resume');
+                if (response.data && response.data.resumeUrl) {
+                    setResumeUrl(response.data.resumeUrl);
                     setResumeExists(true);
                 }
             } catch (err) {
-                console.error("Error checking resume:", err);
+                console.error("Resume not found or config missing:", err);
+                setResumeExists(false);
             } finally {
                 setLoading(false);
             }
         };
-        checkResume();
+        fetchResume();
     }, []);
 
-    const handleDownload = async () => {
+    const handleDownload = () => {
+        if (!resumeUrl) return;
         setIsDownloading(true);
-        try {
-            // Trigger download programmatically
-            const response = await fetch(resumeUrl);
-            const blob = await response.blob();
-            const url = window.URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = 'Syed_Haroon_Resume.pdf';
-            document.body.appendChild(a);
-            a.click();
-            window.URL.revokeObjectURL(url);
-            document.body.removeChild(a);
 
-            // Show success animation
-            setIsDownloading(false);
-            setDownloadSuccess(true);
-            setTimeout(() => setDownloadSuccess(false), 3000);
-        } catch (error) {
-            console.error("Download failed:", error);
-            setIsDownloading(false);
-        }
+        // Open the Cloudinary PDF URL in a new tab to let the browser handle viewing/downloading
+        window.open(resumeUrl, '_blank');
+
+        // Show success animation instantly
+        setIsDownloading(false);
+        setDownloadSuccess(true);
+        setTimeout(() => setDownloadSuccess(false), 3000);
     };
 
     if (loading) {

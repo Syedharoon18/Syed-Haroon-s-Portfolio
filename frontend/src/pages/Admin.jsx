@@ -103,22 +103,30 @@ const Admin = () => {
         setFileState(e.target.files[0]);
     };
 
-    const handleUpload = async (file, setUploadingState) => {
+    const handleUpload = async (file, setUploadingState, isResume = false) => {
         if (!file) return null;
         setUploadingState(true);
         const uploadData = new FormData();
         uploadData.append('file', file);
+        uploadData.append('upload_preset', 'portfolio_uploads');
+        uploadData.append('cloud_name', 'dzivtg8ce');
 
         try {
-            // Note: In Vite dev mode we need to hit the backend directly for /api/upload 
-            // since we might not have a proxy set up for it yet, but assuming api.js handles it:
-            const response = await api.post('/upload', uploadData, {
-                headers: { 'Content-Type': 'multipart/form-data' }
+            // Upload directly to Cloudinary, bypassing Railway's ephemeral storage
+            const response = await fetch('https://api.cloudinary.com/v1_1/dzivtg8ce/upload', {
+                method: 'POST',
+                body: uploadData
             });
-            return response.data.imageUrl; // e.g., /uploads/filename.jpg
+            const data = await response.json();
+
+            if (data.secure_url) {
+                return data.secure_url; // Format: https://res.cloudinary.com/...
+            } else {
+                throw new Error(data.error?.message || "Cloudinary upload failed");
+            }
         } catch (err) {
             console.error('Upload failed:', err);
-            alert('File upload failed');
+            alert('File upload failed: ' + err.message);
             return null;
         } finally {
             setUploadingState(false);
@@ -136,23 +144,14 @@ const Admin = () => {
 
     const handleResumeUpload = async () => {
         if (!resumeFile) return;
-        setResumeUploading(true);
-        const uploadData = new FormData();
-        uploadData.append('file', resumeFile);
+        const uploadedUrl = await handleUpload(resumeFile, setResumeUploading, true);
 
-        try {
-            const response = await api.post('/upload/resume', uploadData, {
-                headers: { 'Content-Type': 'multipart/form-data' }
-            });
-            if (response.data.resumeUrl) {
-                alert('Resume successfully updated!');
-                setResumeFile(null);
-            }
-        } catch (err) {
-            console.error('Resume upload failed:', err);
-            alert('Resume upload failed');
-        } finally {
-            setResumeUploading(false);
+        if (uploadedUrl) {
+            // Since we upload directly to Cloudinary, the backend only needs to save the URL string
+            // Our backend `/upload/resume` currently expects a MultipartFile.
+            // For now, Cloudinary hosts it safely, but the backend requires a database update to store the Cloudinary URL permanently.
+            alert('Resume successfully uploaded to Cloud!\nURL: ' + uploadedUrl + '\nNote: Ensure ResumeView.jsx points to this new URL.');
+            setResumeFile(null);
         }
     };
 
@@ -163,8 +162,8 @@ const Admin = () => {
         if (selectedFile) {
             const uploadedUrl = await handleUpload(selectedFile, setUploading);
             if (uploadedUrl) {
-                const backendUrl = api.defaults.baseURL.replace(/\/api$/, '');
-                finalImageUrl = `${backendUrl}${uploadedUrl}`; // Fully qualified for immediate rendering
+                // We directly save the full Cloudinary URL into the database instead of local backend URL string concatenation
+                finalImageUrl = uploadedUrl;
             } else {
                 return; // Stop if upload failed
             }
