@@ -23,6 +23,17 @@ public class ContactController {
         return ResponseEntity.ok(contactService.saveMessage(contact));
     }
 
+    @GetMapping("/ping")
+    public ResponseEntity<String> pingSystemFile() {
+        try {
+            String prop = System.getProperty("user.dir") + "/uploads/";
+            java.nio.file.Path path = java.nio.file.Paths.get(prop);
+            return ResponseEntity.ok("Success: " + prop + " -> Path created: " + path.toAbsolutePath().toString());
+        } catch (Exception e) {
+            return ResponseEntity.status(500).body("Exception on Paths.get: " + e.getMessage());
+        }
+    }
+
     @GetMapping
     public ResponseEntity<List<Contact>> getAllMessages() {
         return ResponseEntity.ok(contactService.getAllMessages());
