@@ -103,7 +103,7 @@ const Admin = () => {
         setFileState(e.target.files[0]);
     };
 
-    const handleUpload = async (file, setUploadingState, isResume = false) => {
+    const handleUpload = async (file, setUploadingState) => {
         if (!file) return null;
         setUploadingState(true);
         const uploadData = new FormData();
@@ -144,7 +144,7 @@ const Admin = () => {
 
     const handleResumeUpload = async () => {
         if (!resumeFile) return;
-        const uploadedUrl = await handleUpload(resumeFile, setResumeUploading, true);
+        const uploadedUrl = await handleUpload(resumeFile, setResumeUploading);
 
         if (uploadedUrl) {
             // Since we upload directly to Cloudinary, the backend only needs to save the URL string

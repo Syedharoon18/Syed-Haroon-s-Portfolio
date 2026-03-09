@@ -87,7 +87,7 @@ const About = () => {
                 <h3 className="text-3xl sm:text-4xl font-extrabold mb-12 tracking-tight">Technical <span className="gradient-text">Arsenal</span></h3>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                    {skills.map((skill, index) => (
+                    {skills.map((skill) => (
                         <div key={skill.name} className="group relative">
                             {/* Hover effect background */}
                             <div className="absolute inset-0 bg-gradient-to-r from-cyan-500/0 via-cyan-500/10 to-purple-500/0 opacity-0 group-hover:opacity-100 blur-xl transition-opacity duration-500 -z-10 rounded-2xl"></div>

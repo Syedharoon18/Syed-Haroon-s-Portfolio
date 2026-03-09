@@ -17,6 +17,7 @@ const Navbar = () => {
     ];
 
     useEffect(() => {
+        // eslint-disable-next-line react-hooks/exhaustive-deps
         const handleScroll = () => {
             setScrolled(window.scrollY > 20);
 
@@ -37,9 +38,11 @@ const Navbar = () => {
         // Call once to set initial state
         handleScroll();
         return () => window.removeEventListener('scroll', handleScroll);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
     useEffect(() => {
+        // eslint-disable-next-line react-hooks/set-state-in-effect
         setIsOpen(false);
     }, [location]);
 
@@ -108,8 +111,8 @@ const Navbar = () => {
                                 href={`/${link.path}`}
                                 onClick={() => setIsOpen(false)}
                                 className={`block px-6 py-4 rounded-2xl text-2xl font-bold w-full text-center transition-all duration-300 transform translate-y-0 opacity-100 ${activeSection === link.path.substring(1)
-                                        ? 'bg-slate-800 text-cyan-400 border border-slate-700 shadow-xl'
-                                        : 'text-slate-300 hover:bg-slate-800/50 hover:text-white border border-transparent'
+                                    ? 'bg-slate-800 text-cyan-400 border border-slate-700 shadow-xl'
+                                    : 'text-slate-300 hover:bg-slate-800/50 hover:text-white border border-transparent'
                                     }`}
                                 style={{
                                     animationDelay: `${index * 100}ms`,
