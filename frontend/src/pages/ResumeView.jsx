@@ -30,17 +30,17 @@ const ResumeView = () => {
         fetchResume();
     }, []);
 
-    const handleDownload = () => {
-        if (!resumeUrl) return;
-        setIsDownloading(true);
+    const downloadCV = () => {
+        const resumeUrl =
+            "https://res.cloudinary.com/dzivtg8ce/raw/upload/fl_attachment/v1773132696/resume/Syed_Haroon_Resume.pdf";
 
-        // Open the Cloudinary PDF URL in a new tab to let the browser handle viewing/downloading
-        window.open(resumeUrl, '_blank');
+        const link = document.createElement("a");
+        link.href = resumeUrl;
+        link.setAttribute("download", "Syed_Haroon_Resume.pdf");
 
-        // Show success animation instantly
-        setIsDownloading(false);
-        setDownloadSuccess(true);
-        setTimeout(() => setDownloadSuccess(false), 3000);
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
     };
 
     if (loading) {
@@ -106,7 +106,7 @@ const ResumeView = () => {
                         {/* Right: Download Button */}
                         <div className="flex items-center">
                             <button
-                                onClick={handleDownload}
+                                onClick={downloadCV}
                                 disabled={isDownloading || downloadSuccess}
                                 className={`flex items-center justify-center gap-2 px-6 py-2.5 rounded-xl font-bold transition-all duration-500 overflow-hidden relative ${downloadSuccess
                                     ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/50'
