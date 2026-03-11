@@ -42,7 +42,7 @@ const ResumeView = () => {
             if (downloadLink.includes('cloudinary.com') && !downloadLink.includes('fl_attachment')) {
                 const parts = downloadLink.split('/upload/');
                 if (parts.length === 2) {
-                    downloadLink = `${parts[0]}/upload/fl_attachment:Syed_Haroon_Resume.pdf/${parts[1]}`;
+                    downloadLink = `${parts[0]}/upload/fl_attachment/${parts[1]}`;
                 }
             }
 
