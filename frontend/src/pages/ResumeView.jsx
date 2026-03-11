@@ -31,32 +31,13 @@ const ResumeView = () => {
     }, []);
 
     const downloadCV = () => {
-        if (!resumeUrl) return;
-        
         setIsDownloading(true);
 
         try {
-            let downloadLink = resumeUrl;
-            
-            // Add fl_attachment to force Cloudinary to send Content-Disposition: attachment header
-            if (downloadLink.includes('cloudinary.com') && !downloadLink.includes('fl_attachment')) {
-                const parts = downloadLink.split('/upload/');
-                if (parts.length === 2) {
-                    downloadLink = `${parts[0]}/upload/fl_attachment/${parts[1]}`;
-                }
-            }
-
-            // Ensure HTTPS
-            downloadLink = downloadLink.replace('http://', 'https://');
-
-            // Creating a hidden link and clicking it bypasses CORS issues that fetch() would have.
-            // Cloudinary's fl_attachment will tell the browser to download it.
             const link = document.createElement("a");
-            link.href = downloadLink;
-            link.target = "_blank";
+            link.href = "/Syed_Haroon_Resume.pdf";
             link.download = "Syed_Haroon_Resume.pdf";
-            
-            // Firefox requires the link to be in the body
+
             document.body.appendChild(link);
             link.click();
             document.body.removeChild(link);
