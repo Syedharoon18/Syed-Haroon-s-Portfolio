@@ -31,16 +31,44 @@ const ResumeView = () => {
     }, []);
 
     const downloadCV = () => {
-        const resumeUrl =
-            "https://res.cloudinary.com/dzivtg8ce/raw/upload/fl_attachment/v1773132696/resume/Syed_Haroon_Resume.pdf";
+        if (!resumeUrl) return;
+        
+        setIsDownloading(true);
 
-        const link = document.createElement("a");
-        link.href = resumeUrl;
-        link.setAttribute("download", "Syed_Haroon_Resume.pdf");
+        try {
+            let downloadLink = resumeUrl;
+            
+            // Add fl_attachment to force Cloudinary to send Content-Disposition: attachment header
+            if (downloadLink.includes('cloudinary.com') && !downloadLink.includes('fl_attachment')) {
+                const parts = downloadLink.split('/upload/');
+                if (parts.length === 2) {
+                    downloadLink = `${parts[0]}/upload/fl_attachment:Syed_Haroon_Resume.pdf/${parts[1]}`;
+                }
+            }
 
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
+            // Ensure HTTPS
+            downloadLink = downloadLink.replace('http://', 'https://');
+
+            // Creating a hidden link and clicking it bypasses CORS issues that fetch() would have.
+            // Cloudinary's fl_attachment will tell the browser to download it.
+            const link = document.createElement("a");
+            link.href = downloadLink;
+            link.target = "_blank";
+            link.download = "Syed_Haroon_Resume.pdf";
+            
+            // Firefox requires the link to be in the body
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+
+            setDownloadSuccess(true);
+            setTimeout(() => setDownloadSuccess(false), 3000);
+        } catch (error) {
+            console.error("Download error:", error);
+            alert("Failed to initiate download. Please try again.");
+        } finally {
+            setIsDownloading(false);
+        }
     };
 
     if (loading) {

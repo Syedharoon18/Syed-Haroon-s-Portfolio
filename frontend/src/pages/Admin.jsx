@@ -112,15 +112,18 @@ const Admin = () => {
         uploadData.append('cloud_name', 'dzivtg8ce');
 
         try {
-            // Upload directly to Cloudinary, bypassing Railway's ephemeral storage
-            const response = await fetch('https://api.cloudinary.com/v1_1/dzivtg8ce/upload', {
+            // Upload directly to Cloudinary, bypassing Railway's ephemeral storage.
+            // Using 'auto' allows Cloudinary to detect the file type (image vs raw PDF)
+            // automatically, properly bypassing image-only transformations in the preset.
+            const response = await fetch(`https://api.cloudinary.com/v1_1/dzivtg8ce/auto/upload`, {
                 method: 'POST',
                 body: uploadData
             });
             const data = await response.json();
 
             if (data.secure_url) {
-                return data.secure_url; // Format: https://res.cloudinary.com/...
+                // Return the clean URL for the database
+                return data.secure_url;
             } else {
                 throw new Error(data.error?.message || "Cloudinary upload failed");
             }
@@ -144,14 +147,18 @@ const Admin = () => {
 
     const handleResumeUpload = async () => {
         if (!resumeFile) return;
+        // Upload the PDF using Cloudinary's 'auto' endpoint
         const uploadedUrl = await handleUpload(resumeFile, setResumeUploading);
 
         if (uploadedUrl) {
-            // Since we upload directly to Cloudinary, the backend only needs to save the URL string
-            // Our backend `/upload/resume` currently expects a MultipartFile.
-            // For now, Cloudinary hosts it safely, but the backend requires a database update to store the Cloudinary URL permanently.
-            alert('Resume successfully uploaded to Cloud!\nURL: ' + uploadedUrl + '\nNote: Ensure ResumeView.jsx points to this new URL.');
-            setResumeFile(null);
+            try {
+                await api.post('/upload/resume', { resumeUrl: uploadedUrl });
+                alert('Resume successfully uploaded and linked to your portfolio!');
+                setResumeFile(null);
+            } catch (err) {
+                console.error('Failed to link resume to backend:', err);
+                alert('File uploaded to cloud but failed to save in database. Links might break on restart.');
+            }
         }
     };
 
